@@ -6,58 +6,59 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
 {
-    public class BookRepository:IBookRepository
+    public class BookRepository : IBookRepository
     {
-        private DataContext Context;
+        private readonly DataContext _context;
 
-        public BookRepository(DataContext _context)
+        public BookRepository(DataContext context)
         {
-            Context = _context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
+
         public async Task<Book> GetByIdAsync(int id)
         {
-            return await Context.Books.FirstOrDefaultAsync(x=>x.Id==id);
+            return await _context.Books.FindAsync(id);
         }
-        public async Task<Book> GetByISBNAsync(string ISBN)
+
+        public async Task<Book> GetByISBNAsync(string isbn)
         {
-            return await Context.Books.FirstOrDefaultAsync(x => x.ISBN == ISBN);
+            return await _context.Books.FirstOrDefaultAsync(x => x.ISBN == isbn);
         }
 
         public async Task<List<Book>> GetAllAsync()
         {
-            return await Context.Books.ToListAsync();
+            return await _context.Books.ToListAsync();
         }
-
 
         public async Task AddAsync(Book model)
         {
-            if (model == null) { return; }
-            await Context.Books.AddAsync(model);
-            await Context.SaveChangesAsync();
+            _context.Books.Add(model);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Book model)
         {
-            //if(model == null) { return; }
-            var book = await Context.Books.FirstOrDefaultAsync(x => x.Id == model.Id);
-            //if (book == null) { return; }
+            var book = await _context.Books.FindAsync(model.Id);
+            if (book == null)
+            {
+                throw new ArgumentException("Book not found", nameof(model));
+            }
             book.ISBN = model.ISBN;
             book.AuthorName = model.AuthorName;
-            book.Description= model.Description;    
+            book.Description = model.Description;
             book.Genre = model.Genre;
-            
-            await Context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
-
 
         public async Task DeleteByIdAsync(int id)
         {
-            
-            var book = await Context.Books.FirstAsync(x=>x.Id==id);
-            if (book == null) { return; }
-            Context.Books.Remove(book);
-            await Context.SaveChangesAsync();
+            var book = await _context.Books.FindAsync(id);
+            if (book != null)
+            {
+                _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
+            }
         }
-
     }
+
 }

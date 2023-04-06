@@ -18,6 +18,7 @@ using DAL.Models;
 using Library.DAL.Models;
 using Library.BLL.Models;
 using Microsoft.Extensions.Options;
+using System.Text.RegularExpressions;
 
 namespace Library.BLL.Services
 {
@@ -32,17 +33,57 @@ namespace Library.BLL.Services
             _mapper = mapper;
             _jwtSettings = jwtOptions.Value;
         }
-        public async Task<string> AddUser(RegisterDTO model)
+        public async Task<ResponseAuthModel> AddUserAsync(RegisterDTO model)
         {
             User user = _mapper.Map<User>(model);
             var IsExist = await _userRepository.IsUserExistAsync(user);
             if (!IsExist.Item1) 
-                throw new Exception(IsExist.Item2);
+                return new ResponseAuthModel()
+                {
+                    StatusCode = 404,
+                    Token = null,
+                    Message = IsExist.Item2
+                };
+
             user.Id = 0;
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
             await _userRepository.AddUserAsync(user);
-            return GetToken(user); 
+            return new ResponseAuthModel()
+            {
+                StatusCode = 200,
+                Token = GetToken(user),
+                Message = null
+            };
         }
+
+        public async Task<ResponseAuthModel> SignInAsync(LoginDTO model)
+        {
+            User user = await _userRepository.GetUserByNameAsync(model.UserName);
+            if (user == null)
+                return new ResponseAuthModel()
+                {
+                    StatusCode = 404,
+                    Token = null,
+                    Message = "User does not exist"
+                };
+            
+            var IsMatch= BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash);
+            if (!IsMatch)
+                return new ResponseAuthModel()
+                {
+                    StatusCode = 404,
+                    Token = null,
+                    Message = "Wrong password"
+                };
+
+            return new ResponseAuthModel()
+            {
+                StatusCode = 400,
+                Token = GetToken(user),
+                Message = null
+            }; 
+        }
+
         private string GetToken(User user)
         {
             var signingCredentials = new SigningCredentials(

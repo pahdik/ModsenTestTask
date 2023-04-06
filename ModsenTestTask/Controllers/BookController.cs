@@ -18,7 +18,7 @@ namespace Library.WebApi.Controllers
         [Authorize]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await bookService.GetAllBook());
+            return Ok(await bookService.GetAllBooks());
         }
         [HttpGet("GetById")]
         [Authorize]

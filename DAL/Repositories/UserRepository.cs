@@ -10,38 +10,41 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.DAL.Repositories
 {
-    public class UserRepository:IUserRepository
+    public class UserRepository : IUserRepository
     {
-        private DataContext Context;
-        public UserRepository(DataContext dataContext) 
+        private DataContext _context;
+
+        public UserRepository(DataContext context)
         {
-            Context = dataContext;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
+
         public async Task<User> GetUserByNameAsync(string name)
         {
-            var user = await Context.Users.FirstOrDefaultAsync(x => x.UserName == name);
-
-            if (user == null) 
-                throw new ArgumentNullException(nameof(user),"User is null");
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == name);
 
             return user;
         }
-        public async Task<(bool,string)> IsUserExistAsync(User model)
+
+        public async Task<(bool, string)> IsUserExistAsync(User model)
         {
-            var user = await Context.Users.FirstOrDefaultAsync(x => x.UserName == model.UserName || x.Email == model.Email);
-            if(user !=null)
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == model.UserName || x.Email == model.Email);
+            if (user != null)
             {
-                if (user.Email == model.Email) 
+                if (user.Email == model.Email)
                     return (false, "User with the same email already exists");
+
                 if (model.UserName == model.UserName)
                     return (false, "User with the same name already exists");
             }
-            return (true,"");
+            return (true, "");
         }
+
         public async Task AddUserAsync(User user)
         {
-            await Context.Users.AddAsync(user);
-            await Context.SaveChangesAsync();
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
         }
     }
+
 }
