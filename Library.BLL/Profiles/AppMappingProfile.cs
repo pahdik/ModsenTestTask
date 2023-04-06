@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using DAL.Models;
 using Library.BLL.DTO;
-
+using Library.DAL.Models;
 
 namespace Library.BLL.Profiles
 {
@@ -11,6 +11,7 @@ namespace Library.BLL.Profiles
         {
             CreateMap<Book, BookUpdateDTO>().ReverseMap();
             CreateMap<Book, BookAddDTO>().ReverseMap();
+            CreateMap<User,RegisterDTO>().ReverseMap();
         }
     }
 }

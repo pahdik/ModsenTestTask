@@ -6,25 +6,33 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Principal;
+using Library.BLL.DTO;
 
 namespace Library.WebApi.Controllers
 {
     public class AuthController:Controller
     {
-        IAuthService authService;
-        public AuthController(IAuthService _authService)
+        IAuthService _authService;
+        public AuthController(IAuthService authService)
         {
-            authService= _authService;
+            _authService= authService;
         }
-        [HttpGet("/token")]
-        public async Task<IActionResult> Token()
+        
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterDTO model)
         {
-             var token=authService.GetToken();
-            
-            return Ok(new
-                        {
-                            access_token = token
-                        });
+            if (!ModelState.IsValid) 
+                return BadRequest(ModelState);
+            string token;
+            try
+            {
+                token = await _authService.AddUser(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return Ok(token);
         }
     }
 }

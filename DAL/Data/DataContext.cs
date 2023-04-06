@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DAL.Models;
 using System.Numerics;
+using Library.DAL.Models;
 
 namespace DAL.Data
 {
@@ -16,6 +17,7 @@ namespace DAL.Data
             Database.EnsureCreated();
         }
         public DbSet<Book> Books {get;set;}
+        public DbSet<User> Users { get;set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

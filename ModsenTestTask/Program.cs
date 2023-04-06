@@ -13,6 +13,11 @@ using Library.BLL.Profiles;
 using Library.BLL.Services.Interfaces;
 using Library.BLL.Services;
 using Library.BLL.Options;
+using Library.DAL.Repositories.Interfaces;
+using Library.DAL.Repositories;
+using Library.BLL.Models;
+using Microsoft.Extensions.Options;
+
 
 namespace ModsenTestTask
 {
@@ -25,11 +30,13 @@ namespace ModsenTestTask
 
             builder.Services.AddDbContext<DataContext>(options =>
             options.UseSqlServer(
-                     builder.Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Library.WebApi")));
-            // Add services to the container.
+                     builder.Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Library.DAL")));
+            var jwtSettings = new JWTSettings();
+            builder.Configuration.Bind(JWTSettings.SectionName, jwtSettings);
 
             builder.Services.AddAutoMapper(typeof(AppMappingProfile));
-
+            builder.Services.AddSingleton(Options.Create(jwtSettings));
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IBookRepository, BookRepository>();
             builder.Services.AddScoped<IBookService,BookService>();
             builder.Services.AddScoped<IAuthService,AuthService>();
