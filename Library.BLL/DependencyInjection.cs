@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Library.BLL
 {
-    internal class DependencyInjection
+    public class DependencyInjection
     {
+
     }
 }
