@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DAL.Repositories;
-using DAL.Repositories.Interfaces;
+﻿using DAL.Repositories.Interfaces;
 using Library.BLL.Services.Interfaces;
 using DAL.Models;
 using Library.BLL.DTO;
 using AutoMapper;
-using System.Runtime.ExceptionServices;
 
 namespace Library.BLL.Services
 {

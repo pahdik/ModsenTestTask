@@ -1,15 +1,6 @@
-﻿using Azure;
-using Library.BLL.Services.Interfaces;
+﻿using Library.BLL.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Principal;
 using Library.BLL.DTO;
-using System.Net;
-using Newtonsoft.Json.Linq;
-
 
 namespace Library.WebApi.Controllers
 {
@@ -33,7 +24,6 @@ namespace Library.WebApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO model)
         {
-            throw new ArgumentNullException("proverka");
             var responseModel = await _authService.SignInAsync(model);
             if(responseModel.StatusCode==404)
                 return NotFound(responseModel.Message);

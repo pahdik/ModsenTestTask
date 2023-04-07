@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using DAL.Models;
-using DAL.Repositories.Interfaces;
-using DAL.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Library.BLL.DTO;
 using Library.BLL.Services.Interfaces;
-using System.Security.AccessControl;
 
 namespace Library.WebApi.Controllers
 {
