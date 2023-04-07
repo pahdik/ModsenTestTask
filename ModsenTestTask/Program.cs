@@ -1,22 +1,5 @@
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Configuration;
-using DAL.Data;
-using DAL.Repositories;
-using DAL.Repositories.Interfaces;
-using DAL.Models;
-using Library.BLL.Profiles;
-using Library.BLL.Services.Interfaces;
-using Library.BLL.Services;
-using Library.BLL.Options;
-using Library.DAL.Repositories.Interfaces;
-using Library.DAL.Repositories;
-using Library.BLL.Models;
-using Microsoft.Extensions.Options;
+using Library.WebApi;
 
 
 namespace ModsenTestTask
@@ -28,19 +11,7 @@ namespace ModsenTestTask
             var builder = WebApplication.CreateBuilder(args);
 
 
-            builder.Services.AddDbContext<DataContext>(options =>
-            options.UseSqlServer(
-                     builder.Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Library.DAL")));
-            var jwtSettings = new JWTSettings();
-            builder.Configuration.Bind(JWTSettings.SectionName, jwtSettings);
-
-            builder.Services.AddAutoMapper(typeof(AppMappingProfile));
-            builder.Services.AddSingleton(Options.Create(jwtSettings));
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IBookRepository, BookRepository>();
-            builder.Services.AddScoped<IBookService,BookService>();
-            builder.Services.AddScoped<IAuthService,AuthService>();
-            builder.Services.AddControllers();
+            builder.Services.AddInfrastucture(builder.Configuration);
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -52,7 +23,6 @@ namespace ModsenTestTask
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer"
                 });
-
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement {
                     {
@@ -72,23 +42,7 @@ namespace ModsenTestTask
 
                 });
             });
-
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = AuthOptions.ISSUER,
-                        ValidateAudience = true,
-                        ValidAudience = AuthOptions.AUDIENCE,
-                        ValidateLifetime = true,
-                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-                        ValidateIssuerSigningKey = true,
-                    };
-                });
-
+            builder.Services.AddAuth(builder.Configuration);
 
             var app = builder.Build();
 

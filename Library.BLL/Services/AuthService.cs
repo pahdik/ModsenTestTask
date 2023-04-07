@@ -104,10 +104,8 @@ namespace Library.BLL.Services
                 expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
                 claims: claims,
                 signingCredentials: signingCredentials);
-            string token="";
-
-                token = new JwtSecurityTokenHandler().WriteToken(securityToken);
-
+            
+            var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
            
             return token; 
         }
