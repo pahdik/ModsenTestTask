@@ -1,7 +1,6 @@
 using Microsoft.OpenApi.Models;
 using Library.WebApi;
-
-
+using Library.WebApi.Middleware;
 namespace ModsenTestTask
 {
     public class Program
@@ -10,9 +9,11 @@ namespace ModsenTestTask
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
             builder.Services.AddInfrastucture(builder.Configuration);
+
+            builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
+
             builder.Services.AddSwaggerGen(c =>
             {
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -56,6 +57,7 @@ namespace ModsenTestTask
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.MapControllers();
 

@@ -5,6 +5,8 @@ using DAL.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Library.BLL.DTO;
 using Library.BLL.Services.Interfaces;
+using System.Security.AccessControl;
+
 namespace Library.WebApi.Controllers
 {
     public class BookController: Controller
@@ -38,7 +40,7 @@ namespace Library.WebApi.Controllers
         {
             await bookService.AddBook(model);
 
-            return Ok();
+            return Accepted();
         }
         [HttpPatch("Update")]
         [Authorize]
@@ -46,14 +48,14 @@ namespace Library.WebApi.Controllers
         {
             await bookService.UpdateBook(model);
 
-            return Ok();
+            return Accepted();
         }
         [HttpDelete("Delete")]
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             await bookService.DeleteBook(id);
-            return Ok();    
+            return Accepted();    
         }
 
     }

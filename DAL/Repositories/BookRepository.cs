@@ -41,7 +41,7 @@ namespace DAL.Repositories
             var book = await _context.Books.FindAsync(model.Id);
             if (book == null)
             {
-                throw new ArgumentException("Book not found", nameof(model));
+                throw new ArgumentNullException("Book not found", nameof(model));
             }
             book.ISBN = model.ISBN;
             book.AuthorName = model.AuthorName;

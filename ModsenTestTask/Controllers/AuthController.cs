@@ -33,6 +33,7 @@ namespace Library.WebApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO model)
         {
+            throw new ArgumentNullException("proverka");
             var responseModel = await _authService.SignInAsync(model);
             if(responseModel.StatusCode==404)
                 return NotFound(responseModel.Message);
